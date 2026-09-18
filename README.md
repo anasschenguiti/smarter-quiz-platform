@@ -1,6 +1,10 @@
 <div align="center">
 
-  <img src="public/smarter%20logo.png" alt="SMARTER Logo" width="180"/>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/smarter-logo-white.png">
+    <source media="(prefers-color-scheme: light)" srcset="public/smarter%20logo.png">
+    <img src="public/smarter-logo-white.png" alt="SMARTER Logo" width="180"/>
+  </picture>
 
   # 🎓 SMARTER
   ### Interactive Real-Time Educational Gaming & Quiz Platform
