@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mode Entraînement - Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: url('background-entrainement.png')  no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .setup-container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .setup-container h2 {
+            margin-bottom: 30px;
+            color: #2d3748;
+        }
+
+        .question-count {
+            margin-bottom: 30px;
+        }
+
+        .question-count select {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid #4299e1;
+            font-size: 1.1em;
+            margin: 0 10px;
+        }
+
+        .start-btn {
+            background: #4299e1;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            background: #3182ce;
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #edf2f7;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4299e1;
+            transition: width 0.3s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #4a5568;
+        }
+
+        .timer {
+            background: #4299e1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer.warning {
+            background: #ed8936;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .question {
+            background: #fff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .question p {
+            font-size: 1.2em;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .answers {
+            display: grid;
+            gap: 15px;
+        }
+
+        .answer-label {
+            display: block;
+            padding: 15px 20px;
+            background: #edf2f7;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .answer-label:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        input[type="radio"]:checked + .answer-label {
+            background: #4299e1;
+            color: white;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.1em;
+            color: #4a5568;
+            margin-top: 20px;
+            padding: 15px;
+            background: #edf2f7;
+            border-radius: 10px;
+        }
+
+        .result-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .score-display {
+            font-size: 1.5em;
+            color: #4a5568;
+            margin: 20px 0;
+            padding: 20px;
+            background: #edf2f7;
+            border-radius: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+            min-width: 150px;
+        }
+
+        .restart-btn {
+            background: #4299e1;
+        }
+
+        .home-btn {
+            background: #48bb78;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            color: white;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="setup-container" class="setup-container">
+            <h2>Mode Entraînement</h2>
+            <div class="question-count">
+                <label for="question-number">Nombre de questions :</label>
+                <select id="question-number">
+                    <option value="5">5 questions</option>
+                    <option value="10" selected>10 questions</option>
+                    <option value="15">15 questions</option>
+                    <option value="20">20 questions</option>
+                    <option value="30">30 questions</option>
+                    <option value="50">50 questions</option>
+                </select>
+            </div>
+            <button class="start-btn" onclick="startTraining()">Commencer l'entraînement</button>
+        </div>
+
+        <div id="quiz-container" style="display: none;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            
+            <div class="progress-info">
+                <p>Question <span id="current-question">1</span> sur <span id="total-questions">0</span></p>
+                <div class="timer" id="timer-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="20" height="20">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="timer">15</span>
+                </div>
+            </div>
+
+            <div class="question" id="question-container">
+                <p id="question-text"></p>
+                <div class="answers" id="answers-container"></div>
+            </div>
+
+            <div class="score">
+                Score actuel : <span id="current-score">0</span> points
+            </div>
+        </div>
+
+        <div id="result-container" class="result-container" style="display: none;">
+            <h2>Quiz Terminé !</h2>
+            <div class="score-display">
+                Score final : <span id="final-score">0</span> / <span id="final-total">0</span>
+            </div>
+            <div class="button-group">
+                <button class="action-btn restart-btn" onclick="restartQuiz()">Recommencer</button>
+                <a href="create-join.html" class="action-btn home-btn">Retour à l'accueil</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = [];
+        let timer;
+        const TIME_LIMIT = 15;
+        let selectedQuestionCount = 10;
+
+       // Dans entrainement.html
+async function startTraining() {
+    selectedQuestionCount = parseInt(document.getElementById('question-number').value);
+    document.getElementById('setup-container').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'block';
+    
+    try {
+        const response = await fetch(`/api/training/questions?count=${selectedQuestionCount}`);
+        questions = await response.json();
+        updateDisplay();
+        startTimer();
+    } catch (error) {
+        console.error('Error initializing training mode:', error);
+    }
+}
+
+        function updateDisplay() {
+            if (currentQuestion >= questions.length) {
+                endQuiz();
+                return;
+            }
+
+            const question = questions[currentQuestion];
+            document.getElementById('question-text').textContent = question.QUESTION;
+            document.getElementById('current-question').textContent = currentQuestion + 1;
+            document.getElementById('total-questions').textContent = questions.length;
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+
+            const answersContainer = document.getElementById('answers-container');
+            answersContainer.innerHTML = '';
+            
+            const options = [
+                question.CORRECTRESPONSE,
+                question.RESPONSE2,
+                question.RESPONSE3,
+                question.RESPONSE4
+            ].sort(() => Math.random() - 0.5);
+
+            options.forEach((answer, index) => {
+                const answerElement = document.createElement('div');
+                answerElement.innerHTML = `
+                    <input type="radio" id="answer_${index}" name="answer" value="${answer}">
+                    <label class="answer-label" for="answer_${index}">${answer}</label>
+                `;
+                answersContainer.appendChild(answerElement);
+            });
+
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', () => submitAnswer(radio.value));
+            });
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            let timeLeft = TIME_LIMIT;
+            const timerElement = document.getElementById('timer');
+            const timerContainer = document.getElementById('timer-container');
+            
+            timerContainer.classList.remove('warning');
+            timerElement.textContent = timeLeft;
+
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+
+                if (timeLeft <= 5) {
+                    timerContainer.classList.add('warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    submitAnswer(null);
+                }
+            }, 1000);
+        }
+
+        function submitAnswer(answer) {
+            clearInterval(timer);
+            const question = questions[currentQuestion];
+            const isCorrect = answer === question.CORRECTRESPONSE;
+
+            if (isCorrect) {
+                score++;
+                document.getElementById('current-score').textContent = score;
+            }
+
+            showAnswerResult(isCorrect, question.CORRECTRESPONSE);
+
+            setTimeout(() => {
+                currentQuestion++;
+                updateDisplay();
+                if (currentQuestion < questions.length) {
+                    startTimer();
+                }
+            }, 2000);
+        }
+
+        function showAnswerResult(isCorrect, correctAnswer) {
+            const answersContainer = document.getElementById('answers-container');
+            const labels = answersContainer.querySelectorAll('.answer-label');
+
+            labels.forEach(label => {
+                if (label.textContent === correctAnswer) {
+                    label.style.backgroundColor = '#48bb78';
+                    label.style.color = 'white';
+                }
+            });
+
+            if (!isCorrect) {
+                const selectedLabel = answersContainer.querySelector('input[type="radio"]:checked + .answer-label');
+                if (selectedLabel) {
+                    selectedLabel.style.backgroundColor = '#e53e3e';
+                    selectedLabel.style.color = 'white';
+                }
+            }
+        }
+
+        function endQuiz() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('result-container').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-total').textContent = questions.length;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('current-score').textContent = '0';
+            document.getElementById('result-container').style.display = 'none';
+            document.getElementById('setup-container').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMARTER - متعلم ذكي</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gagalin&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+    --primary: #1e90ff;
+    --secondary: #0077b6;
+    --accent: #00b4d8;
+    --background: #f8f9fa;
+    --text-primary: #2b2d42;
+    --text-secondary: #4a4e69;
+}
+
+/* Language Dropdown Styles */
+.language-dropdown {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.language-dropdown .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.language-dropdown .dropdown-content a {
+    color: var(--text-primary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s;
+}
+
+.language-dropdown .dropdown-content a:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+.language-dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.language-dropdown .globe-icon {
+    font-size: 24px;
+    color: white; /* Couleur blanche pour contraster avec le fond bleu */
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.language-dropdown .globe-icon:hover {
+    color: var(--accent); /* Changement de couleur au survol */
+}
+body{
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M2 2L30 15L15 17L13 30L2 2Z' fill='%233498db' stroke='%232980b9' stroke-width='1'/%3E%3C/svg%3E") 2 2, auto;
+}
+/* Arabic and Multilingual Support */
+body[lang='ar'] {
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    text-align: right;
+}
+
+body[lang='en'], body[lang='fr'] {
+    font-family: 'Gagalin', sans-serif;
+    direction: ltr;
+    text-align: left;
+}
+
+/* Adjust existing styles for RTL support */
+body[lang='ar'] .feature-section,
+body[lang='ar'] .row {
+    flex-direction: row-reverse;
+}
+
+body[lang='ar'] .character.char-boy {
+    right: 10%;
+    left: auto;
+}
+
+body[lang='ar'] .character.char-girl {
+    left: 10%;
+    right: auto;
+}
+
+/* Hero Section Styles */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 80px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 0 50px 50px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/api/placeholder/1920/1080') center/cover;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    color: #ffffff;
+    font-weight: 800;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 1rem;
+}
+
+.hero-section p {
+    font-size: 1.4rem;
+    color: #ffffff;
+    margin-top: 1rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.cta-button {
+    background: var(--accent);
+    color: var(--text-primary);
+    margin-top: 2rem;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.3rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 201, 240, 0.3);
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 201, 240, 0.4);
+    background: #0096c7; /* Bleu plus foncé au survol */
+}
+
+.character {
+    position: absolute;
+    width: 150px; /* Taille réduite pour éviter la superposition */
+    height: 150px; /* Taille réduite pour éviter la superposition */
+    transition: transform 0.3s ease;
+}
+
+.character:hover {
+    transform: scale(1.1);
+}
+
+.char-boy {
+    top: 10%;
+    left: 10%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.char-girl {
+    bottom: 10%;
+    right: 10%;
+    animation: float 6s ease-in-out infinite 1s;
+}
+
+.char-alien {
+    bottom: 15%;
+    left: 15%;
+    animation: float 6s ease-in-out infinite 2s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.feature-section {
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 20px;
+    margin: 40px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.feature {
+    padding: 30px;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+    margin-bottom: 30px;
+    background: linear-gradient(135deg, rgba(114, 9, 183, 0.05) 0%, rgba(67, 97, 238, 0.05) 100%);
+}
+
+.feature:hover {
+    transform: translateY(-5px);
+}
+
+.feature h3 {
+    color: var(--text-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.feature p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+footer {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: #ffffff;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+    border-radius: 50px 50px 0 0;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.footer-section {
+    flex-basis: calc(25% - 20px); /* Adjusted to 25% for better balance */
+    margin-bottom: 20px;
+}
+
+.footer-section h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.footer-section p {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.footer-section a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer-section a:hover {
+    color: var(--accent);
+}
+
+.social-icons a {
+    color: #fff;
+    font-size: 24px;
+    margin-right: 15px;
+    transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+    color: var(--accent);
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #555;
+}
+
+.footer-bottom p {
+    font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-section {
+        flex-basis: 100%;
+        text-align: center;
+    }
+
+    .footer-section img {
+        margin: 10px auto;
+    }
+
+    .footer-bottom p {
+        font-size: 0.9rem;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 0;
+        text-align: center;
+    }
+
+    .nav-links a {
+        display: block;
+        padding: 10px;
+    }
+
+    .menu-icon {
+        display: block;
+    }
+
+    .feature, .step {
+        flex-basis: 100%;
+        margin-bottom: 20px;
+    }
+
+    .footer-section {
+        flex-basis: 100%;
+        margin-bottom: 30px;
+    }
+}
+/* How to Play Section Styles */
+.how-to-play-section {
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 20px;
+    margin: 40px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.how-to-play-section h2 {
+    color: var(--text-primary);
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.how-to-play-section p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.step {
+    padding: 20px;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, rgba(114, 9, 183, 0.05) 0%, rgba(67, 97, 238, 0.05) 100%);
+}
+
+.step:hover {
+    transform: translateY(-5px);
+}
+
+.step-icon {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.step h3 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.step p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.step-image {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-top: 15px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.step-details {
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* Responsive Design for How to Play Section */
+@media (max-width: 768px) {
+    .how-to-play-section {
+        padding: 40px 10px;
+        margin: 20px 10px;
+    }
+
+    .how-to-play-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .step {
+        padding: 15px;
+    }
+
+    .step h3 {
+        font-size: 1.3rem;
+    }
+
+    .step p {
+        font-size: 0.9rem;
+    }
+}
+/* Ajoutez ces styles à la fin de votre fichier CSS */
+
+@media (max-width: 768px) {
+    .character {
+        width: 100px; /* Réduire la taille des images */
+        height: 100px;
+    }
+
+    .char-boy {
+        top: 5%; /* Ajuster la position */
+        left: 5%;
+    }
+
+    .char-girl {
+        bottom: 5%; /* Ajuster la position */
+        right: 5%;
+    }
+
+    .char-alien {
+        bottom: 10%; /* Ajuster la position */
+        left: 10%;
+    }
+}
+
+@media (max-width: 480px) {
+    .character {
+        width: 80px; /* Réduire encore la taille des images pour les très petits écrans */
+        height: 80px;
+    }
+
+    .char-boy {
+        top: 2%; /* Ajuster la position */
+        left: 2%;
+    }
+
+    .char-girl {
+        bottom: 2%; /* Ajuster la position */
+        right: 2%;
+    }
+
+    .char-alien {
+        bottom: 5%; /* Ajuster la position */
+        left: 5%;
+    }
+}
+</style>
+</head>
+<body lang="ar">
+    <!-- Language Toggle with Dropdown -->
+    <div class="language-dropdown">
+        <i class="fas fa-globe globe-icon"></i>
+        <div class="dropdown-content">
+            <a href="#" data-lang="ar">العربية</a>
+            <a href="#" data-lang="en">English</a>
+            <a href="#" data-lang="fr">Français</a>
+        </div>
+    </div>
+
+    <!-- Multilingual Content with Data Attributes -->
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 data-ar="SMARTER" data-en="SMARTER" data-fr="SMARTER">SMARTER</h1>
+            <p data-ar="التعليم بالألعاب مع تعريفه" 
+               data-en="Educational Gaming Redefined" 
+               data-fr="L'apprentissage par le jeu réinventé">التعليم بالألعاب معاد تعريفه</p>
+               <button class="cta-button" 
+               data-ar="ابدأ المغامرة!" 
+               data-en="Start the Adventure!" 
+               data-fr="Commencer l'aventure !"
+               onclick="window.location.href='create-join.html'">
+           ابدأ المغامرة!
+       </button>
+            <img src="2.png" alt="Boy Character" class="character char-boy">
+            <img src="3.png" alt="Girl Character" class="character char-girl">
+            <img src="1.png" alt="Alien Character" class="character char-alien">
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature">
+                    <h3 data-ar="🎮 تعلم تفاعلي" data-en="🎮 Interactive Learning" data-fr="🎮 Apprentissage interactif">🎮 تعلم تفاعلي</h3>
+                    <p data-ar="انغمس في عالم من المغامرات حيث كل تحدٍ يجعلك تتقدم في اللغة الفرنسية. ألعاب صغيرة ممتعة ومهام مثيرة في انتظارك!" 
+                       data-en="Dive into a world of adventures where every challenge helps you progress in French. Fun mini-games and exciting quests await you!" 
+                       data-fr="Plonge dans un monde d'aventures où chaque défi te fait progresser en français. Des mini-jeux captivants et des quêtes passionnantes t'attendent !">
+                       انغمس في عالم من المغامرات حيث كل تحدٍ يجعلك تتقدم في اللغة الفرنسية. ألعاب صغيرة ممتعة ومهام مثيرة في انتظارك!
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature">
+                    <h3 data-ar="⭐ مخصص لمستواك" data-en="⭐ Adapted to Your Level" data-fr="⭐ Adapté à ton niveau">⭐ مخصص لمستواك</h3>
+                    <p data-ar="سواء كنت مبتدئًا أو خبيرًا، ألعابنا تتكيف مع مهاراتك. تقدم حسب وتيرتك وافتح تحديات جديدة!" 
+                       data-en="Whether you're a beginner or an expert, our games adapt to your skills. Progress at your own pace and unlock new challenges!" 
+                       data-fr="Que tu sois débutant ou expert, nos jeux s'adaptent à tes compétences. Progresse à ton rythme et débloque de nouveaux défis !">
+                       سواء كنت مبتدئًا أو خبيرًا، ألعابنا تتكيف مع مهاراتك. تقدم حسب وتيرتك وافتح تحديات جديدة!
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature">
+                    <h3 data-ar="🤝 مجتمع نشط" data-en="🤝 Active Community" data-fr="🤝 Communauté active">🤝 مجتمع نشط</h3>
+                    <p data-ar="انضم إلى مجتمع نشط من المتعلمين، شارك في تحديات جماعية وشارك نجاحاتك مع أصدقائك!" 
+                       data-en="Join a vibrant community of learners, participate in group challenges, and share your successes with your friends!" 
+                       data-fr="Rejoins une communauté dynamique d'apprenants, participe à des défis en groupe et partage tes succès avec tes amis !">
+                       انضم إلى مجتمع نشط من المتعلمين، شارك في تحديات جماعية وشارك نجاحاتك مع أصدقائك!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Instructions of the Game Section -->
+        <div class="feature-section">
+            <div class="container">
+                <h2 class="text-center mb-4" data-ar="تعليمات اللعبة" data-en="Instructions of the Game" data-fr="Instructions du jeu"><strong>تعليمات اللعبة</strong></h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="feature">
+                            <h3 data-ar="🎮 فهم القواعد" data-en="🎮 Understand the Rules" data-fr="🎮 Comprendre les règles">🎮 فهم القواعد</h3>
+                            <p data-ar="كل لعبة لها مجموعة من القواعد الخاصة بها. تأكد من قراءة التعليمات بعناية قبل البدء." 
+                               data-en="Each game has its own set of rules. Be sure to read the instructions carefully before starting." 
+                               data-fr="Chaque jeu a ses propres règles. Assurez-vous de lire les instructions attentivement avant de commencer.">
+                               كل لعبة لها مجموعة من القواعد الخاصة بها. تأكد من قراءة التعليمات بعناية قبل البدء.
+                            </p>
+                            <ul>
+                                <li data-ar="راجع ميكانيكا اللعبة" data-en="Review game mechanics" data-fr="Revoyez les mécaniques du jeu">راجع ميكانيكا اللعبة</li>
+                                <li data-ar="تحقق من شروط الفوز" data-en="Check winning conditions" data-fr="Vérifiez les conditions de victoire">تحقق من شروط الفوز</li>
+                                <li data-ar="افهم نظام التسجيل" data-en="Understand scoring system" data-fr="Comprenez le système de score">افهم نظام التسجيل</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="feature">
+                            <h3 data-ar="🤝 التواصل مع فريقك" data-en="🤝 Communicate with Your Team" data-fr="🤝 Communiquez avec votre équipe">🤝 التواصل مع فريقك</h3>
+                            <p data-ar="التعاون هو المفتاح. استخدم ميزة الدردشة للتواصل الفعال مع فريقك أثناء اللعب." 
+                               data-en="Collaboration is key. Use the chat feature to communicate effectively with your team during games." 
+                               data-fr="La collaboration est essentielle. Utilisez la fonction de chat pour communiquer efficacement avec votre équipe pendant les jeux.">
+                               التعاون هو المفتاح. استخدم ميزة الدردشة للتواصل الفعال مع فريقك أثناء اللعب.
+                            </p>
+                            <ul>
+                                <li data-ar="استخدم الدردشة داخل اللعبة" data-en="Use in-game chat" data-fr="Utilisez le chat en jeu">استخدم الدردشة داخل اللعبة</li>
+                                <li data-ar="شارك الاستراتيجيات" data-en="Share strategies" data-fr="Partagez des stratégies">شارك الاستراتيجيات</li>
+                                <li data-ar="تنسيق الإجراءات" data-en="Coordinate actions" data-fr="Coordonnez les actions">تنسيق الإجراءات</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="feature-section">
+            <div class="container">
+                <h2 class="text-center mb-4" data-ar="كيفية اللعب" data-en="How to Play" data-fr="Comment jouer"><strong>كيفية اللعب</strong></h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="step">
+                            <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                            <h3 data-ar="إنشاء حساب" data-en="Create an Account" data-fr="Créer un compte">إنشاء حساب</h3>
+                            <p data-ar="سجل مجانًا وقم بإعداد ملفك الشخصي." 
+                               data-en="Sign up for free and set up your profile." 
+                               data-fr="Inscrivez-vous gratuitement et configurez votre profil.">
+                               سجل مجانًا وقم بإعداد ملفك الشخصي.
+                            </p>
+                            <div class="step-details">
+                                <p data-ar="قم بإنشاء ملفك الشخصي للعب مع صورة رمزية مخصصة وتفضيلات. تتبع تقدمك وتواصل مع متعلمين آخرين." 
+                                   data-en="Create your personalized gaming profile with custom avatar and preferences. Track your progress and connect with other learners." 
+                                   data-fr="Créez votre profil de jeu personnalisé avec un avatar et des préférences. Suivez votre progression et connectez-vous avec d'autres apprenants.">
+                                   قم بإنشاء ملفك الشخصي للعب مع صورة رمزية مخصصة وتفضيلات. تتبع تقدمك وتواصل مع متعلمين آخرين.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="step">
+                            <div class="step-icon"><i class="fas fa-gamepad"></i></div>
+                            <h3 data-ar="انضم إلى جلسة لعبة" data-en="Join a Game Session" data-fr="Rejoindre une session de jeu">انضم إلى جلسة لعبة</h3>
+                            <p data-ar="اختر موضوعًا ومستوى صعوبة لبدء اللعب." 
+                               data-en="Choose a subject and difficulty level to start playing." 
+                               data-fr="Choisissez un sujet et un niveau de difficulté pour commencer à jouer.">
+                               اختر موضوعًا ومستوى صعوبة لبدء اللعب.
+                            </p>
+                            <div class="step-details">
+                                <p data-ar="تصفح غرف الألعاب المتاحة أو أنشئ غرفتك الخاصة. اختر من بين مواضيع مختلفة وقم بتخصيص إعدادات اللعبة." 
+                                   data-en="Browse available game rooms or create your own. Select from various subjects and customize game settings." 
+                                   data-fr="Parcourez les salles de jeu disponibles ou créez la vôtre. Sélectionnez parmi différents sujets et personnalisez les paramètres du jeu.">
+                                   تصفح غرف الألعاب المتاحة أو أنشئ غرفتك الخاصة. اختر من بين مواضيع مختلفة وقم بتخصيص إعدادات اللعبة.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Footer Section - Correct container and section structure -->
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3 id="follow-us-title" data-ar="تابعنا" data-en="Follow Us" data-fr="Suivez-nous">تابعنا</h3>
+                        <div class="social-icons">
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-section">
+                        <h3 id="contact-title" data-ar="اتصل بنا" data-en="Contact" data-fr="Contact">اتصل بنا</h3>
+                        <p id="email-desc" data-ar="البريد الإلكتروني: " 
+                           data-en="Email: href='mailto:info@smarter.com'>info@smarter.com" 
+                           data-fr="Email :href='mailto:info@smarter.com'>info@smarter.com">
+                           البريد الإلكتروني: <a href="mailto:info@smarter.com">info@smarter.com</a>
+                        </p>
+                        <p id="phone-desc" data-ar="الهاتف: +212 600 000000" data-en="Phone: +212 600 000000" data-fr="Téléphone : +212 600 000000">الهاتف: +212 600 000000</p>
+                    </div>
+                    <div class="footer-section">
+                        <h3 id="address-title" data-ar="العنوان" data-en="Address" data-fr="Adresse">العنوان</h3>
+                        <p id="address-desc" data-ar="طنجة، المغرب" data-en="Tangier, Morocco" data-fr="Tanger, Maroc">طنجة، المغرب</p>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p data-ar="&copy; 2025 SMARTER. جميع الحقوق محفوظة." 
+                       data-en="&copy; 2025 SMARTER. All Rights Reserved." 
+                       data-fr="&copy; 2025 SMARTER. Tous droits réservés.">
+                       &copy; 2025 SMARTER. جميع الحقوق محفوظة.
+                    </p>
+                </div>
+            </div>
+        </footer>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const languageLinks = document.querySelectorAll('.language-dropdown .dropdown-content a');
+                const body = document.body;
+    
+                // Function to change language
+                function changeLanguage(lang) {
+                    body.lang = lang;
+                    body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    
+                    // Translate all elements with multilingual attributes
+                    document.querySelectorAll('[data-ar][data-en][data-fr]').forEach(el => {
+                        el.textContent = el.getAttribute(`data-${lang}`);
+                    });
+                }
+    
+                // Add click event to language links
+                languageLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        changeLanguage(link.dataset.lang);
+                    });
+                });
+    
+                // Set initial language to Arabic
+                changeLanguage('ar');
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

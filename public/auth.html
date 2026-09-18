@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"> <!-- Set language to Arabic and direction to right-to-left -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول / التسجيل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        /* Style pour l'arrière-plan GIF */
+        body {
+            background: url("AnasAbdin_ Photo.gif") no-repeat center center fixed;
+            background-size: cover; /* Pour couvrir toute la fenêtre */
+            height: 100vh; /* Assure que le corps prend toute la hauteur */
+        }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.6); /* Semi-transparence */
+            backdrop-filter: blur(10px); /* Effet de flou */
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Bordure subtile */
+            border-radius: 15px; /* Coins arrondis */
+            padding: 2rem; /* Espacement interne */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Ombre subtile */
+        }
+        .social-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 9999px; /* Forme circulaire */
+            transition: background-color 0.3s ease;
+        }
+        .social-login-btn img {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+        /* Style pour les champs de saisie */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            color: #000; /* Couleur du texte en noir */
+            background-color: rgba(255, 255, 255, 0.8); /* Arrière-plan semi-transparent */
+            border: 1px solid rgba(0, 0, 0, 0.2); /* Bordure subtile */
+            border-radius: 8px; /* Coins arrondis */
+            padding: 0.75rem; /* Espacement interne */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Style pour les champs de saisie au focus */
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            border-color: #3b82f6; /* Couleur de la bordure au focus */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Ombre au focus */
+            outline: none; /* Supprimer l'outline par défaut */
+        }
+        /* Style pour les boutons radio (homme/femme) */
+        .gender-option input[type="radio"]:checked + div {
+            border: 2px solid #3b82f6; /* Bordure bleue pour l'option sélectionnée */
+            background-color: rgba(59, 130, 246, 0.1); /* Fond légèrement bleu */
+        }
+
+        /* Style pour les icônes homme/femme */
+        .gender-option div {
+            border: 2px solid transparent; /* Bordure transparente par défaut */
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Style au survol */
+        .gender-option:hover div {
+            border-color: #3b82f6; /* Bordure bleue au survol */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center">
+    <div class="w-full max-w-sm p-6 bg-white bg-opacity-50 backdrop-blur-lg rounded-lg shadow-lg">
+        <!-- Formulaire de connexion -->
+        <div id="loginForm">
+            <h3 class="text-2xl font-bold text-center mb-6">تسجيل الدخول</h3>
+            <form id="loginFormContent">
+                <div class="mb-4">
+                    <label for="loginEmail" class="block text-gray-700">البريد الإلكتروني</label>
+                    <input type="email" id="loginEmail" name="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="البريد الإلكتروني" required>
+                </div>
+                <div class="mb-4">
+                    <label for="loginPassword" class="block text-gray-700">كلمة المرور</label>
+                    <input type="password" id="loginPassword" name="password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="كلمة المرور" required>
+                </div>
+                <div class="mb-4 flex items-center">
+                    <input type="checkbox" id="remember_me" name="remember_me" class="mr-2">
+                    <label for="remember_me" class="text-gray-700">تذكرني</label>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">تسجيل الدخول</button>
+                <p class="text-center mt-4 text-gray-600">ليس لديك حساب؟ <a href="#" id="showSignup" class="text-blue-600 hover:underline">التسجيل</a></p>
+            </form>
+        </div>
+
+        <!-- Formulaire d'inscription -->
+        <div id="signupForm" class="hidden">
+            <h3 class="text-2xl font-bold text-center mb-6">التسجيل</h3>
+            <form id="signupFormContent">
+                <div class="mb-4">
+                    <label for="signupName" class="block text-gray-700">الاسم</label>
+                    <input type="text" id="signupName" name="name" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="الاسم" required>
+                </div>
+                <div class="mb-4">
+                    <label for="signupEmail" class="block text-gray-700">البريد الإلكتروني</label>
+                    <input type="email" id="signupEmail" name="email" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="البريد الإلكتروني" required>
+                </div>
+                <div class="mb-4">
+                    <label for="signupPassword" class="block text-gray-700">كلمة المرور</label>
+                    <input type="password" id="signupPassword" name="password" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="كلمة المرور" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">الجنس</label>
+                    <div class="flex justify-around mt-2">
+                        <label class="flex items-center cursor-pointer gender-option" data-gender="male">
+                            <input type="radio" name="gender" value="male" class="hidden">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 transition-transform transform hover:scale-110">
+                                <i class="fas fa-mars text-2xl"></i>
+                            </div>
+                            <span class="ml-2 text-gray-700">ذكر</span>
+                        </label>
+                        <label class="flex items-center cursor-pointer gender-option" data-gender="female">
+                            <input type="radio" name="gender" value="female" class="hidden">
+                            <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 transition-transform transform hover:scale-110">
+                                <i class="fas fa-venus text-2xl"></i>
+                            </div>
+                            <span class="ml-2 text-gray-700">أنثى</span>
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">التسجيل</button>
+                <p class="text-center mt-4 text-gray-600">لديك حساب بالفعل؟ <a href="#" id="showLogin" class="text-blue-600 hover:underline">تسجيل الدخول</a></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const showSignup = document.getElementById('showSignup');
+        const showLogin = document.getElementById('showLogin');
+
+        // Basculer entre les formulaires de login et de signup
+        showSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+        });
+
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        });
+
+        // Gérer la soumission du formulaire de connexion
+        document.getElementById('loginFormContent').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (email && password) {
+                socket.emit('login', { email, password });
+            } else {
+                alert('يرجى ملء جميع الحقول.');
+            }
+        });
+
+        // Gérer la soumission du formulaire d'inscription
+        document.getElementById('signupFormContent').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+
+            if (name && email && password && gender) {
+                socket.emit('signup', { name, email, password, gender });
+            } else {
+                alert('يرجى ملء جميع الحقول.');
+            }
+        });
+
+        // Gérer la réponse du serveur après la connexion
+        socket.on('login success', (data) => {
+            if (data.role === 'admin') {
+                window.location.href = '/admin.html'; // Rediriger vers le panneau admin
+            } else {
+                window.location.href = '/student.html'; // Rediriger vers le panneau étudiant (student.html)
+            }
+        });
+
+        // Gérer la réponse du serveur après l'inscription
+        socket.on('signup success', () => {
+            alert('تم التسجيل بنجاح! يرجى تسجيل الدخول.');
+            signupForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+        });
+
+        // Gérer les erreurs
+        socket.on('error', (message) => {
+            alert(message);
+        });
+    </script>
+</body>
+</html>

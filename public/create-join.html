@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Game Hub - L'Aventure Continue</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Press+Start+2P&display=swap');
+
+:root {
+  --primary: #6c5ce7;
+  --secondary: #00b894;
+  --background: #2d3436;
+  --surface: #636e72;
+  --text: #dfe6e9;
+  --accent: #fd79a8;
+  --neon-glow: 0 0 10px rgba(108, 92, 231, 0.8);
+}
+
+body {
+  font-family: 'Chakra Petch', sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+  margin: 0;
+  min-height: 100vh;
+}
+
+.game-universe {
+  background-image: url('Cool Gaming Desktop Wallpapers.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.game-universe::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+/* Profile Styles */
+.profile-container {
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 3;
+}
+
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-frame {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  position: relative;
+  margin: 0 auto;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.avatar-status {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #00b894;
+  border: 3px solid var(--background);
+  box-shadow: 0 0 10px rgba(0, 184, 148, 0.5);
+}
+
+.player-title {
+  font-family: 'Press Start 2P', cursive;
+  color: white;
+  margin-top: 1rem;
+  font-size: 1.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  position: relative;
+  z-index: 3;
+}
+
+.player-level {
+  color: white;
+  font-size: 1.2rem;
+  margin-top: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  position: relative;
+  z-index: 3;
+}
+
+/* Console Design */
+.console-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 3;
+}
+
+.console-screen {
+  background-color: rgba(45, 52, 54, 0.9);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.screen-header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.screen-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--surface);
+}
+
+.screen-dot:nth-child(1) { background-color: #ff6b6b; }
+.screen-dot:nth-child(2) { background-color: #ffd93d; }
+.screen-dot:nth-child(3) { background-color: #6c5ce7; }
+
+.game-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 1rem;
+}
+
+/* Card Styles */
+.game-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+
+.card-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(108, 92, 231, 0.1) 0%,
+    rgba(108, 92, 231, 0) 70%
+  );
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding-top: 1rem;
+}
+
+.card-icon {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  position: relative;
+  overflow: hidden;
+}
+
+.card-icon img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--background);
+  padding: 10px;
+}
+
+.card-content h2 {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.card-content p {
+  color: white;
+  opacity: 1;
+  margin-bottom: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Button Styles */
+.neo-button {
+  font-family: 'Press Start 2P', cursive;
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(45deg, var(--primary), var(--secondary));
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.neo-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(108, 92, 231, 0.5);
+}
+
+.create-btn {
+  background: linear-gradient(45deg, #6c5ce7, #a55eea);
+}
+
+.join-btn {
+  background: linear-gradient(45deg, #00b894, #00cec9);
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.game-card {
+  animation: float 6s ease-in-out infinite;
+}
+
+.game-card:nth-child(2) {
+  animation-delay: -3s;
+}
+
+/* Power Button */
+.power-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #2d3436, #636e72);
+  margin: 1rem auto 0;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.power-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: var(--text);
+  transform: translate(-50%, -50%);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+}
+
+.power-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(108, 92, 231, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .game-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .console-container {
+    padding: 1rem;
+  }
+  
+  .player-title {
+    font-size: 1.2rem;
+  }
+}
+    </style>
+</head>
+<body>
+    <div class="game-universe">
+        <div class="container py-5">
+            <!-- Game Console Interface -->
+            <main>
+                <div class="console-container">
+                    <div class="console-screen">
+                        <div class="screen-header">
+                            <div class="screen-dot"></div>
+                            <div class="screen-dot"></div>
+                            <div class="screen-dot"></div>
+                        </div>
+                        <div class="screen-content">
+                            <div class="game-options">
+                                <div class="game-card create-option">
+                                    <div class="card-glow"></div>
+                                    <div class="card-content">
+                                        <div class="card-icon">
+                                            <img src="nejma.png" alt="Créer" class="icon-image">
+                                        </div>
+                                        <h2>CRÉER</h2>
+                                        <p>Nouveau Monde</p>
+                                        <button class="neo-button create-btn" onclick="window.location.href='admin.html'">GO!</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="game-card join-option">
+                                    <div class="card-glow"></div>
+                                    <div class="card-content">
+                                        <div class="card-icon">
+                                            <img src="sayf.png" alt="Jouer" class="icon-image">
+                                        </div>
+                                        <h2>JOUER</h2>
+                                        <p>Rejoindre l'Aventure</p>
+                                        <button class="neo-button join-btn" onclick="window.location.href='student.html'">GO!</button>
+                                    </div>
+                                </div>
+                                  <!-- Nouvelle carte pour l'entraînement -->
+                                  <div class="game-card training-option">
+                                    <div class="card-glow"></div>
+                                    <div class="card-content">
+                                        <div class="card-icon">
+                                            <img src="entrainement.png" alt="Entraînement" class="icon-image">
+                                        </div>
+                                        <h2>ENTRAÎNEMENT</h2>
+                                        <p>Mode Solo</p>
+                                        <button class="neo-button training-btn" onclick="window.location.href='entrainement.html'">GO!</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screen-footer">
+                            <div class="power-button"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

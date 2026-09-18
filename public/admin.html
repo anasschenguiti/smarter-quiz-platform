@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .pixel-art {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        body {
+            background-image: url('teacherbackground.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96 text-center">
+        <img src="teachers logo.png" alt="Pixel Art Logo" class="pixel-art w-32 h-32 mx-auto mb-4">
+        <h1 class="text-2xl font-bold mb-4">Admin Panel</h1>
+
+        <button id="createGameBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full">
+            Create Game
+        </button>
+
+        <div id="gameCode" class="mt-4 text-lg font-semibold hidden">
+            Game Code: <span id="code" class="text-blue-500"></span>
+        </div>
+
+        <div id="playerCount" class="mt-4 text-lg font-semibold hidden">
+            Players Joined: <span id="count" class="text-green-500">0</span>
+        </div>
+
+        <div id="playerList" class="mt-4 text-left hidden">
+            <h3 class="font-semibold mb-2">Connected Players:</h3>
+            <ul id="players" class="list-disc pl-5"></ul>
+        </div>
+
+        <div id="questionCountDiv" class="mt-4 hidden">
+            <label for="questionCount" class="text-lg font-semibold">Number of Questions:</label>
+            <select id="questionCount" class="w-full px-4 py-2 border rounded mt-2">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">20</option>
+                <option value="20">30</option>
+                <option value="15">40</option>
+                <option value="20">50</option>
+            </select>
+        </div>
+
+        <button id="startGameBtn" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-4 hidden w-full">
+            Start Game
+        </button>
+
+        <!-- Top 3 Players Section -->
+        <div id="topPlayers" class="mt-4 text-left hidden">
+            <h3 class="font-semibold mb-2">Top 3 Players:</h3>
+            <ul id="topPlayersList" class="list-disc pl-5"></ul>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const createGameBtn = document.getElementById('createGameBtn');
+        const gameCodeDiv = document.getElementById('gameCode');
+        const codeSpan = document.getElementById('code');
+        const playerCountDiv = document.getElementById('playerCount');
+        const countSpan = document.getElementById('count');
+        const playerList = document.getElementById('playerList');
+        const playersList = document.getElementById('players');
+        const questionCountDiv = document.getElementById('questionCountDiv');
+        const questionCountSelect = document.getElementById('questionCount');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const topPlayersDiv = document.getElementById('topPlayers');
+        const topPlayersList = document.getElementById('topPlayersList');
+
+        const connectedPlayers = new Map();
+
+        createGameBtn.addEventListener('click', () => {
+            socket.emit('create game');
+        });
+
+        socket.on('game code', (code) => {
+            gameCodeDiv.classList.remove('hidden');
+            codeSpan.textContent = code;
+            playerList.classList.remove('hidden');
+            questionCountDiv.classList.remove('hidden');
+            startGameBtn.classList.remove('hidden');
+        });
+
+        socket.on('player count', (data) => {
+            playerCountDiv.classList.remove('hidden');
+            countSpan.textContent = data.count;
+
+            // Add player to list
+            connectedPlayers.set(data.count, data.playerName);
+            updatePlayerList();
+        });
+
+        function updatePlayerList() {
+            playersList.innerHTML = '';
+            connectedPlayers.forEach((name, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${name}`;
+                playersList.appendChild(li);
+            });
+        }
+
+        startGameBtn.addEventListener('click', () => {
+            const numberOfQuestions = parseInt(questionCountSelect.value, 10);
+            socket.emit('start game', {
+                code: codeSpan.textContent,
+                numberOfQuestions
+            });
+            startGameBtn.disabled = true;
+            startGameBtn.textContent = 'Game In Progress';
+            startGameBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+            startGameBtn.classList.add('bg-gray-500');
+        });
+
+        // Handle game over for admin
+        socket.on('game over admin', (data) => {
+            const topPlayers = data.topPlayers;
+
+            // Show the top players section
+            topPlayersDiv.classList.remove('hidden');
+
+            // Clear previous list
+            topPlayersList.innerHTML = '';
+
+            // Add top players to the list
+            topPlayers.forEach((player, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${player.playerName} - ${player.score} points`;
+                topPlayersList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>

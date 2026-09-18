@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        .bg-green-500 {
+            background-color: #4CAF50 !important; /* Green */
+            color: white !important;
+        }
+
+        .bg-red-500 {
+            background-color: #F44336 !important; /* Red */
+            color: white !important;
+        }
+
+        .pixel-art {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        body {
+            background-image: url('create-join.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-96 text-center">
+        <img src="players logo.png" alt="Pixel Art Logo" class="pixel-art w-32 h-32 mx-auto mb-4">
+        <h1 class="text-2xl font-bold mb-4">Student Panel</h1>
+
+        <input 
+            id="gameCodeInput" 
+            type="text" 
+            placeholder="Enter Game Code" 
+            class="w-full px-4 py-2 border rounded mb-4 text-black bg-white"
+        >
+
+        <button id="joinGameBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full">
+            Join Game
+        </button>
+
+        <div id="score" class="mt-4 text-lg font-semibold">
+            Score: <span id="scoreValue">0</span>
+        </div>
+
+        <div id="question" class="mt-4 text-lg font-semibold hidden">
+            <p id="questionText" class="mb-4"></p>
+            <div id="options" class="space-y-2"></div>
+            <div id="timer" class="mt-4 text-lg font-semibold">
+                Time left: <span id="timeLeft" class="text-red-500">15</span>s
+            </div>
+            <div id="resultDiv" class="mt-4 text-lg font-semibold hidden">
+                <p id="resultText"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const socket = io();
+    const gameCodeInput = document.getElementById('gameCodeInput');
+    const joinGameBtn = document.getElementById('joinGameBtn');
+    const questionDiv = document.getElementById('question');
+    const questionText = document.getElementById('questionText');
+    const optionsDiv = document.getElementById('options');
+    const timeLeftSpan = document.getElementById('timeLeft');
+    const resultDiv = document.getElementById('resultDiv');
+    const resultText = document.getElementById('resultText');
+    const scoreValue = document.getElementById('scoreValue');
+
+    let timer;
+    let timeLeft = 15;
+    let hasAnswered = false;
+    let currentQuestionId = null;
+    let selectedAnswer = null;
+    let currentOptions = [];
+    let currentCorrectAnswer = null;
+    let currentScore = 0;
+
+    joinGameBtn.addEventListener('click', () => {
+        const code = gameCodeInput.value;
+        const playerName = prompt("Enter your name:"); // Ask for the player's name
+        if (code && playerName) {
+            socket.emit('join game', { code, playerName }); // Send both code and playerName
+        } else {
+            alert("Please enter a game code and your name.");
+        }
+    });
+
+    socket.on('join success', (data) => {
+        alert(data.message);
+        questionDiv.classList.remove('hidden');
+    });
+
+        socket.on('new question', (data) => {
+            // Reset UI
+            questionDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+            questionText.textContent = data.question;
+            currentOptions = data.options;
+            optionsDiv.innerHTML = data.options.map(option => `
+                <button class="w-full px-4 py-2 bg-gray-200 rounded hover:bg-gray-300" onclick="submitAnswer('${data._id}', '${option}', this)">
+                    ${option}
+                </button>
+            `).join('');
+
+            // Reset Timer and State
+            if (timer) clearInterval(timer);
+            timeLeft = 15;
+            timeLeftSpan.textContent = timeLeft;
+            hasAnswered = false;
+            selectedAnswer = null;
+            currentQuestionId = data._id;
+
+            // Start Timer
+            timer = setInterval(() => {
+                timeLeft--;
+                timeLeftSpan.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleQuestionTimeout();
+                }
+            }, 1000);
+        });
+
+        function submitAnswer(questionId, answer, button) {
+            if (hasAnswered || timeLeft <= 0) return;
+
+            // Disable All Buttons
+            optionsDiv.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+
+            // Highlight Selected Button
+            button.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+            button.classList.add('bg-blue-500', 'text-white');
+
+            // Mark as Answered
+            hasAnswered = true;
+            selectedAnswer = answer;
+
+            // Send Answer to Server
+            socket.emit('submit answer', { 
+                questionId, 
+                answer, 
+                code: gameCodeInput.value 
+            });
+        }
+
+        function handleQuestionTimeout() {
+            if (!hasAnswered) {
+                questionText.textContent = "Time's up! You didn't answer.";
+                optionsDiv.querySelectorAll('button').forEach(button => {
+                    button.disabled = true;
+                });
+            }
+
+            // Wait for server to send the answer result
+            socket.emit('time expired', { 
+                code: gameCodeInput.value, 
+                questionId: currentQuestionId 
+            });
+        }
+
+        socket.on('answer result', (data) => {
+    // Update the score display
+    scoreValue.textContent = data.score || 0;
+
+    // Store the correct answer for later use
+    currentCorrectAnswer = data.correctAnswer;
+
+    // Only reveal the result if the timer has expired
+    if (timeLeft <= 0) {
+        revealResult(data);
+    }
+    });
+
+        function revealResult(data) {
+            // Reset button styles
+            optionsDiv.querySelectorAll('button').forEach(button => {
+                button.classList.remove('bg-blue-500', 'text-white', 'bg-green-500', 'bg-red-500');
+                button.disabled = false;
+            });
+
+            // Highlight correct answer in green
+            const correctAnswerButton = Array.from(optionsDiv.querySelectorAll('button')).find(btn => 
+                btn.textContent.trim() === data.correctAnswer
+            );
+
+            if (correctAnswerButton) {
+                correctAnswerButton.classList.add('bg-green-500', 'text-white');
+            }
+
+            // Highlight selected answer
+            const selectedAnswerButton = Array.from(optionsDiv.querySelectorAll('button')).find(btn => 
+                btn.textContent.trim() === selectedAnswer
+            );
+
+            if (selectedAnswerButton) {
+                selectedAnswerButton.classList.add(data.isCorrect ? 'bg-green-500' : 'bg-red-500', 'text-white');
+            }
+
+            // Display result message
+            resultText.textContent = data.isCorrect
+                ? "Correct! Great job!"
+                : `Incorrect! The correct answer was: ${data.correctAnswer}`;
+            
+            resultDiv.classList.remove('hidden');
+        }
+
+        socket.on('question result', (data) => {
+            // If the result wasn't already revealed and the timer is 0
+            if (timeLeft <= 0 && currentCorrectAnswer) {
+                revealResult({
+                    isCorrect: selectedAnswer === currentCorrectAnswer,
+                    correctAnswer: currentCorrectAnswer
+                });
+            }
+        });
+
+        socket.on('force result reveal', (data) => {
+    // Update the score display
+    scoreValue.textContent = data.score || 0;
+
+    // Fallback method if something goes wrong with the client-side timing
+    if (currentCorrectAnswer) {
+        revealResult({
+            isCorrect: selectedAnswer === currentCorrectAnswer,
+            correctAnswer: currentCorrectAnswer
+        });
+    }
+});
+
+socket.on('game over', (data) => {
+    // Clear existing content
+    clearInterval(timer);
+    questionDiv.innerHTML = '';
+    
+    // Create game over display with the current score
+    const gameOverDiv = document.createElement('div');
+    gameOverDiv.className = 'text-center p-8';
+    
+    // Get the final score from the data or the current scoreValue
+    const finalScore = data.score !== undefined ? data.score : parseInt(scoreValue.textContent) || 0;
+    
+    gameOverDiv.innerHTML = `
+        <h2 class="text-4xl font-bold mb-8 text-blue-600">Game Over!</h2>
+        <div class="bg-white rounded-lg p-8 shadow-lg mb-8">
+            <p class="text-xl mb-2">Great job, ${data.playerName || 'Player'}!</p>
+            <div class="text-3xl font-bold text-green-600 mb-4">
+                Your Final Score: ${finalScore}
+            </div>
+            <div class="text-lg">
+                <p>Total Questions: ${data.totalQuestions}</p>
+            </div>
+        </div>
+        <button onclick="location.reload()" 
+            class="bg-blue-500 text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-600 transition-colors">
+            Play Again
+        </button>
+    `;
+    
+    questionDiv.appendChild(gameOverDiv);
+    questionDiv.classList.remove('hidden');
+    scoreDisplay.classList.add('hidden');
+    
+    // Change background for game over
+    changeBackground('game-over.png');
+});
+    </script>
+</body>
+</html>
