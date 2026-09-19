@@ -17,6 +17,7 @@
     "gamification"
   ],
   "author": "anasschenguiti",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
